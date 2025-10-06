@@ -1,7 +1,7 @@
 {
   "name": "ds-smartcontract",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon",
     "build": "rimraf dist && tsc -p tsconfig.json && node scripts/copy-abi.js",
