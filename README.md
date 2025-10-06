@@ -136,9 +136,9 @@ Response:
 POST /blockchain/write
 Authorization: Bearer <access>
 Content-Type: application/json
-{ "hash": "0x<64-hex>" }
+{ "hash": "0x<64-hex>", "metadata": { "optional": "data" } }
 # or
-{ "hashes": ["0x<64-hex>", "0x<64-hex>"] }
+{ "hashes": ["0x<64-hex>", "0x<64-hex>"], "metadatas": [{ "optional": "data" }] }
 ```
 Response:
 ```json
@@ -162,23 +162,16 @@ Response for `tx`/`txUrl`:
 
 - Verify
 ```http
-POST /blockchain/verify
+GET /blockchain/verify?hash=0x<64-hex>&metadata={"optional":"json"}
 Authorization: Bearer <access>
-Content-Type: application/json
-{
-  "metadata": { ... },
-  "expectedHash": "0x<optional precomputed>",
-  "diff": true,
-  "originalMetadata": { ... optional known-good reference ... }
-}
 ```
 Response:
 ```json
-{ "verified": true, "tampered": false, "hash": "0x..." }
+{ "verified": true }
 ```
-If tampered and diff=true with original provided:
+If verification fails:
 ```json
-{ "verified": false, "tampered": true, "details": [ { "path": "a.b", "type": "changed", "before": 1, "after": 2 } ] }
+{ "verified": false, "error": "metadata_changed", "details": "..." }
 ```
 
 ---
