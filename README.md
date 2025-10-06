@@ -13,7 +13,7 @@ Secure REST API (Express + TypeScript) for writing and verifying metadata hashes
 
 ---
 
-## 1) Requirements
+## 1. Requirements
 - Node 22.10+ (or latest Active LTS). Required by Hardhat and ESM.
 - An RPC URL (Ethereum/Polygon/etc.) and a funded deployer `PRIVATE_KEY`.
 
@@ -22,7 +22,7 @@ Optional:
 
 ---
 
-## 2) Quick Start (Development)
+## 2. Quick Start (Development)
 1. Install dependencies
 ```bash
 npm install
@@ -43,7 +43,7 @@ Health check: `GET /health`
 
 ---
 
-## 3) Environment Configuration (.env)
+## 3. Environment Configuration (.env)
 - General
   - `NODE_ENV` (development|production)
   - `PORT` (default 4000)
@@ -62,7 +62,7 @@ Switching networks: update `RPC_URL` and `CHAIN_ID` only.
 
 ---
 
-## 4) Smart Contract and Deployment
+## 4. Smart Contract and Deployment
 Contract: `contracts/HashStore.sol`
 - `store(bytes32)` and `storeBatch(bytes32[])` are `onlyOwner`
 - `exists(bytes32) -> bool`
@@ -84,7 +84,7 @@ Tip: You can verify configuration in `hardhat.config.ts` (network `custom` uses 
 
 ---
 
-## 5) Security & Production Hardening
+## 5. Security & Production Hardening
 - Helmet, CORS, compression, rate limiting (120 req/min default)
 - JWT best practices:
   - Access tokens short-lived; refresh tokens long-lived
@@ -103,7 +103,7 @@ Recommended Ops:
 
 ---
 
-## 6) API Reference
+## 6. API Reference
 Authorization header: `Authorization: Bearer <accessToken>` for protected endpoints.
 
 - Obtain tokens
@@ -176,7 +176,7 @@ If verification fails:
 
 ---
 
-## 7) How Verification Works
+## 7. How Verification Works
 - Client computes deterministic JSON of metadata (sorted keys, stable arrays) and keccak256 hash.
 - Server computes or uses provided `expectedHash`, checks on-chain `exists(hash)`.
 - If not found and `diff=true` with `originalMetadata`, server returns a deep-diff between original and provided metadata to indicate which parts changed.
@@ -185,7 +185,7 @@ On-chain best practice: treat the on-chain existence as the source of truth; the
 
 ---
 
-## 8) Production Deployment
+## 8. Production Deployment
 ### Docker
 Build image:
 ```bash
@@ -208,16 +208,34 @@ pm2 start dist/index.js --name ds-smart-api
 - Tune rate limits and request body size
 - Horizontal scaling: ensure the deployer `PRIVATE_KEY` is consistent, or externalize writes behind a queue if needed
 
+### Render.com Deployment
+To deploy on Render.com with proper CORS configuration:
+
+1. Fork this repository on GitHub
+2. Create a new Web Service on Render.com
+3. Connect it to your forked repository
+4. In the "Environment" section, add these variables:
+   ```
+   NODE_ENV=production
+   PORT=4000
+   CORS_ORIGIN=https://ds-smartcontract1.onrender.com,http://localhost:3000
+   ```
+   (Include any other required environment variables from `.env.example`)
+5. Set the build command to: `npm run build`
+6. Set the start command to: `npm run start`
+
+The CORS configuration will now allow requests from both your Render.com deployment and localhost for development.
+
 ---
 
-## 9) Developer Notes
+## 9. Developer Notes
 - ABI source: `src/abi/HashStore.json` (auto-populated by `npm run compile`)
 - To change contract, update Solidity and re-run `npm run compile` to refresh ABI
 - Ethers v6 is used; ensure imports match v6 style
 
 ---
 
-## 10) Troubleshooting
+## 10. Troubleshooting
 - Hardhat compile errors about Node: upgrade to Node 22.10+ or latest Active LTS
 - Missing `CONTRACT_ADDRESS`: deploy first, then set it in `.env`
 - `invalid_token`: ensure JWT claims and secrets match server config
@@ -225,7 +243,7 @@ pm2 start dist/index.js --name ds-smart-api
 
 ---
 
-## 11) Scripts
+## 11. Scripts
 - `npm run dev` – start dev server (nodemon)
 - `npm run build` – compile TypeScript
 - `npm run start` – run compiled server
@@ -234,7 +252,7 @@ pm2 start dist/index.js --name ds-smart-api
 
 ---
 
-## 12) Complete Documentation
+## 12. Complete Documentation
 
 For detailed documentation on all aspects of the system, please see the [docs](docs/README.md) directory:
 
@@ -248,5 +266,5 @@ For detailed documentation on all aspects of the system, please see the [docs](d
 
 ---
 
-## 13) License
+## 13. License
 MIT

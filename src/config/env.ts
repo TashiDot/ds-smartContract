@@ -64,5 +64,3 @@ export function getEnv(): AppEnv {
 
   return cachedEnv;
 }
-
-

@@ -15,8 +15,29 @@ import { openapiSpec } from './docs/openapi.js';
 const app = express();
 
 app.set('trust proxy', 1);
+// Updated CORS configuration to allow both localhost and Render.com origins
+const corsOptions = {
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // List of allowed origins
+    const allowedOrigins = [
+      'http://localhost:4000',
+      'http://localhost:3000',
+      'https://ds-smartcontract1.onrender.com'
+    ];
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: false
+};
+app.use(cors(corsOptions));
 app.use(helmet());
-app.use(cors({ origin: getEnv().CORS_ORIGIN, credentials: false }));
 app.use(compression());
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('combined'));
@@ -47,6 +68,11 @@ app.use((_req: Request, res: Response) => {
 // Error handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  // Handle CORS errors specifically
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).json({ error: 'CORS not allowed' });
+  }
+  
   logger.error({ err }, 'Unhandled error');
   const isProd = getEnv().NODE_ENV === 'production';
   if (isProd) return res.status(500).json({ error: 'Internal Server Error' });
@@ -73,5 +99,3 @@ function shutdown(signal: string) {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
-
-
