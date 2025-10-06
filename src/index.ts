@@ -14,6 +14,11 @@ import { openapiSpec } from './docs/openapi.js';
 
 const app = express();
 
+// Test route at the very beginning
+app.get('/test', (_req: Request, res: Response) => {
+  res.json({ message: 'Test route working' });
+});
+
 app.set('trust proxy', 1);
 // Updated CORS configuration to allow both localhost and Render.com origins
 const corsOptions = {
@@ -56,9 +61,21 @@ app.get('/health', (_req: Request, res: Response) => {
 app.use('/auth', authRouter);
 app.use('/blockchain', bcRouter);
 
+// Debug route to check what's in openapiSpec before serving
+app.get('/debug-spec', (_req, res) => {
+  res.json({
+    servers: openapiSpec.servers,
+    serverCount: openapiSpec.servers.length
+  });
+});
+
 // Swagger documentation
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec, { explorer: true }));
-app.get('/docs.json', (_req, res) => res.json(openapiSpec));
+app.get('/docs.json', (_req, res) => {
+  // Log what we're about to send
+  console.log('Serving OpenAPI spec with servers:', openapiSpec.servers);
+  res.json(openapiSpec);
+});
 
 // 404 handler
 app.use((_req: Request, res: Response) => {

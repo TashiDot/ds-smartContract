@@ -5,7 +5,10 @@ export const openapiSpec = {
     version: '1.0.0',
     description: 'REST API for on-chain hash storage and verification with cryptographic metadata commitments.'
   },
-  servers: [{ url: 'http://localhost:4000' }, {url: 'https://ds-smartcontract1.onrender.com'}],
+  servers: [
+    { url: 'http://localhost:4000' },
+    { url: 'https://ds-smartcontract1.onrender.com' }
+  ],
   components: {
     securitySchemes: {
       bearerAuth: {
